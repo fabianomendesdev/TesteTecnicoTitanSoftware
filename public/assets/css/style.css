@@ -1,0 +1,255 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* GLOBAL */
+.form-input {
+
+}
+
+/* FIM GLOBAL */
+
+/* VARIÁVEIS */
+:root {
+    --primary-color: rgba(131, 58, 180, 1);
+    --secondary-color: rgba(253, 29, 29, 1);
+    --tertiary-color: rgba(252, 176, 69, 1);
+    --white-color: #FFF;
+    --dark-color: #000;
+
+    --height-header: 40px;
+    --height-footer: 0px;
+}
+/* FIM VARIÁVEIS */
+
+/* DASHBOARD LAYOUT */
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+header.dashboard-header {
+    display: flex;
+    flex-direction: row;
+    height: var(--height-header);
+    background-color: red;
+}
+
+header.dashboard-header .header-toogle {
+    display: flex;
+    align-items: center;
+    background-color: bisque;
+}
+
+header.dashboard-header .header-right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+    padding: .25rem .5rem;
+    background-color: blue;
+}
+
+/* TOGGLE MENU */
+.header-toogle,
+.dashboard-aside {
+    flex-basis: 0rem;
+    min-width: 0;
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    transition: 
+        flex-basis 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.3s ease-in-out,
+        visibility 0.4s step-end;
+}
+
+.header-toogle.show,
+.dashboard-aside.show {
+    flex-basis: 20rem;
+    visibility: visible;
+    opacity: 1;
+    transition: 
+        flex-basis 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.4s ease-in-out 0.1s,
+        visibility 0s;
+}
+
+/* BOTÃO TOGGLE MENU */
+.header-right > #btn-toggle-nav {
+    position: relative;
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+}
+
+.header-right > #btn-toggle-nav > .open,
+.header-right > #btn-toggle-nav > .close {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 25px;
+    height: 25px;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.header-right > #btn-toggle-nav > .open {
+    opacity: 1;
+    transform: rotate(0deg);
+    pointer-events: auto;
+}
+
+.header-right > #btn-toggle-nav > .close {
+    opacity: 0;
+    transform: rotate(-90deg);
+    pointer-events: none;
+}
+
+.header-right.show > #btn-toggle-nav > .open {
+    opacity: 0;
+    transform: rotate(90deg);
+    pointer-events: none;
+}
+
+.header-right.show > #btn-toggle-nav > .close {
+    opacity: 1;
+    transform: rotate(0deg);
+    pointer-events: auto;
+}
+/* FIM BOTÃO TOGGLE MENU */
+/* FIM TOGGLE MENU */
+
+.dashboard-body {
+    display: flex;
+    flex-direction: row;
+    min-height: calc(100dvh - (var(--height-header) + var(--height-footer)));
+}
+
+aside.dashboard-aside {
+    display: flex;
+    flex-direction: column;
+    background-color: blue;
+}
+
+nav.dashboard-nav {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: green;
+}
+
+ul.dashboard-nav-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 1rem;
+    padding: 1rem 0.50rem;
+    background-color: aqua;
+}
+
+ul.dashboard-nav-list > li {
+    display: flex;
+    width: 100%;
+    
+}
+
+ul.dashboard-nav-list > li > a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    color: inherit;
+    text-decoration: none;
+    background-color: chocolate;
+    transition: background-color 0.2s ease;
+    border-radius: 0.5rem;
+}
+
+ul.dashboard-nav-list > li > a:hover {
+    background-color: rgb(167, 86, 28);
+}
+
+main.dashboard-main {
+    background-color: yellow;
+    flex-grow: 1;
+    padding: 1rem 0.50rem;
+}
+
+main.dashboard-main h1 {
+    background-color: green;
+}
+
+footer.dashboard-footer {
+    height: var(--height-footer);
+    background-color: red;
+}
+/* DASHBOARD LAYOUT */
+
+/* LOGIN */
+.main#login {
+    background: #833AB4;
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--tertiary-color) 100%);
+
+    min-height: 100dvh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main#login > #section-login {
+    background-color: var(--white-color);
+    border: .2px solid #00000041;
+    padding: 5rem 3rem;
+    border-radius: .25rem;
+}
+
+.main#login #form-login {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2rem;
+    gap: 2rem;
+}
+
+.main#login #form-login .box-button  {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.main#login #form-login > .login-input {
+    width: 100%;
+}
+
+.main#login #form-login > .login-input > input {
+    width: 100%;
+    height: 3rem;
+    border: none;
+    text-align: center;
+    outline-color: var(--primary-color);
+}
+
+.main#login #form-login .box-button > button {
+    cursor: pointer;
+    width: 50%;
+    border: none;
+    height: 3rem;
+    background-color: var(--primary-color);
+    color: #FFF;
+}
+
+.main#login #form-login > .login-input > input,
+.main#login #form-login .box-button > button {
+    border-radius: 0.7rem;
+}
+/* FIM LOGIN */

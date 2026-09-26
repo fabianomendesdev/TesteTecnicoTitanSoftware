@@ -13,6 +13,5 @@ try {
     require(dirname(__FILE__, 2). '/routes/web.php');
     $router->process();
 } catch (Throwable $th){
-    // session_start();
     exit("Aconteceu um erro no sistema! ". $th->getMessage());
 }

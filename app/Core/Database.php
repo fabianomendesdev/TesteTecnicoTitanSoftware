@@ -52,13 +52,21 @@ class Database
     {
         try {
             $stmt = $this->connection->prepare($sql);
-            $stmt->execute($params);
+
+            foreach ($params as $column => $param) {
+                $value = $param[0] ?? null;
+                $type  = $param[1] ?? PDO::PARAM_STR;
+
+                $stmt->bindValue(":$column", $value, $type);
+            }
+
+            $stmt->execute();
 
             if (!$idColumnName) return (int) $this->connection->lastInsertId();
 
             return (int) $stmt->rowCount();
         } catch (PDOException $e) {
-            throw new Exception("Erro exec");
+            throw new \Exception("Erro exec: " . $e->getMessage());
         }
     }
 
@@ -66,11 +74,19 @@ class Database
     {
         try {
             $stmt = $this->connection->prepare($sql);
-            $stmt->execute($params);
 
-            return $stmt->fetchAll();
+            foreach ($params as $column => $param) {
+                $value = $param[0] ?? null;
+                $type  = $param[1] ?? PDO::PARAM_STR;
+
+                $stmt->bindValue(":$column", $value, $type);
+            }
+
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            throw new Exception("Erro query");
+            throw new Exception("Erro query". $e->getMessage());
         }
     }
 }

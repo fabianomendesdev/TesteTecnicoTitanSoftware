@@ -3,24 +3,19 @@
 namespace app\Controllers;
 
 use app\Core\Controller;
+use app\Core\Session;
 use app\Models\User;
+use Exception;
 
 class AuthController extends Controller
 {
-    public static function sessionDestroy()
-    {
-        if (session_status() === PHP_SESSION_DISABLED) {
-            session_start();
-        }
-
-        unset($_SESSION);
-        session_destroy();
-        unset($_COOKIE['user']);
-    }
-
     public function login()
     {
-        return view('login');
+        $params = request()->all();
+
+        return view('login', [
+            'email' => $params['email'] ?? ''
+        ]);
     }
 
     public function store()
@@ -43,33 +38,47 @@ class AuthController extends Controller
         $validated = $request->all();
 
         try {
-            session_start();
+            Session::start();
             
             $user = User::where(['email' => $validated['email'] ?? null])->first();
 
-            return response()->json([
-                'success' => false,
-                'message' => $user
-            ], 500);
+            if (!$user || !$user->passwordVerify($validated['password'] ?? '')) {
+                Session::destroy();
+                return response()->json([
+                    'success' => false,
+                    'message' => "Ops, Email ou Senha inválido",
+                    'errors'  => [
+                        'email' => ["Ops, Email ou Senha inválido"]
+                    ]
+                ], 400);
+            }
 
+            if (!$user->ativo) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Sua conta está desativada.",
+                ], 400);
+            }
 
-            // if (!$user || !$user->passwordVerify($validated['password'] ?? null)) {
-            //     self::sessionDestroy();
-            //     return response()->json([
-            //         'success' => false,
-            //         'message' => "Senha ou email inválidos."
-            //     ], 400);
-            // }
+            Session::regenerateId();
 
-            // $_SESSION['user'] = $user;
+            $sessionToken = bin2hex(random_bytes(32));
+
+            $user->session_token = $sessionToken;
+            $user->save(['session_token']);
+
+            $_SESSION['id_user']       = $user->id_user;
+            $_SESSION['session_token'] = $sessionToken;
+
+            setcookie('remember_token', $sessionToken, time() + (86400 * 30), "/", "", false, true);
 
             return response()->json([
                 'success'  => true,
                 'message'  => "Login efetuado com sucesso!",
                 'redirect' => route('dashboard')->getFullPath()
             ], 200);
-        } catch (\Throwable $th) {
-            self::sessionDestroy();
+        } catch (Exception $th) {
+            Session::destroy();
             return response()->json([
                 'success' => false,
                 'message' => "Erro no servidor: " . $th->getMessage()
@@ -79,7 +88,7 @@ class AuthController extends Controller
 
     public function logout()
     {
-        self::sessionDestroy();
+        Session::destroy();
         return response()->redirect(route('login')->getFullPath());
     }
 }

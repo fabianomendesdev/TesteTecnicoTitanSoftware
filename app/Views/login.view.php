@@ -2,41 +2,51 @@
 
 <main class="main" id="login">
     <section id="section-login">
-        <h1>Teste Titan Software</h1>
+        <h1 class="title-login">Sistema de Controle de Serviços</h1>
 
         <form id="form-login" method="POST">
+            <div class="box-message">
+                <p id="message"></p>
+            </div>
             <div class="login-input">
                 <input 
+                    class="form-input"
                     type="email"
                     name="email"
                     id="email"
                     placeholder="Email"
                     required
+                    value="<?= $email ?>"
+                    autocomplete="email"
                 >
-                <div>
+                <div class="box-errors">
                     <p id="error-email"></p>
                 </div>
             </div>
 
             <div class="login-input">
-                <input 
+                <input
+                    class="form-input"
                     type="password"
                     name="password"
                     id="password"
-                    placeholder="Password"
+                    placeholder="Senha"
                     required
+                    autocomplete="password"
                 >
-                <div>
+                <div class="box-errors">
                     <p id="error-password"></p>
                 </div>
             </div>
 
-            <div>
-                <a href="<?= route('register')->getFullPath() ?>">Criar conta</a>
-            </div>
-            
-            <div class="box-button">
-                <button type="submit" id="btn-login">Login</button>
+            <div class="login-actions">
+                <div class="box-button">
+                    <button class="btn btn-primary" id="btn-login" type="submit">Entrar</button>
+                </div>
+
+                <div class="box-create-account">
+                    <a href="<?= route('register')->getFullPath() ?>">Cadastrar usuário</a>
+                </div>
             </div>
         </form>
     </section>
@@ -66,16 +76,23 @@ $(document).ready(function() {
         .fail(function(xhr) {
             let response = xhr.responseJSON;
 
-            console.log(response);
-
             if (response) {
-                if (response.errors) {
+                if (response?.errors) {
                     $.each(response.errors, function(field, messages) {
                         let text = messages[0];
                         $('#error-' + field).text(text);
+                        $('#error-password').text('');
+                        $('#password').val('');
                     });
+                } else if (response?.message) {
+                    $('#message').text(response?.message);
+                    $('#error-email').text('');
+                    $('#error-password').text('');
+                    $('#email').val('');
+                    $('#password').val('');
                 }
-            } else if (response.message) {
+            } else {
+                // Erro generico
             }
         });
     });

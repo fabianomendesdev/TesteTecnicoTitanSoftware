@@ -28,21 +28,21 @@ class Router
             throw new Exception("The route {$name} already exists.");
         }
 
+        $this->routes[$name] = $route;
         return $route;
     }
 
-    public function updateRoute(Route &$route, string $name = ''): void
+    public function updateRoute(Route &$route, string $newName = ''): void
     {
-        if ($name) {
-            if (array_key_exists($name, $this->routes)) {
-                throw new Exception("The route {$name} already exists.");
+        if ($newName && $newName !== $route->name) {
+            if (array_key_exists($newName, $this->routes)) {
+                throw new Exception("The route {$newName} already exists.");
             }
 
             unset($this->routes[$route->name]);
-            $route->name = $name;
+            $route->name = $newName;
+            $this->routes[$route->name] = $route;
         }
-
-        $this->routes[$route->name] = $route;
     }
 
     public function getRouteByPathAndMethod(string $path, string $method): Route|null
@@ -50,9 +50,16 @@ class Router
         $path = '/' . trim($path, '/');
 
         foreach ($this->routes as $route) {
-            if (($route->path == $path) && 
-                (strtoupper($route->httpMethod) === strtoupper($method))
-            ) {
+            if (strtoupper($route->httpMethod) !== strtoupper($method)) {
+                continue;
+            }
+
+            $routePattern = preg_replace('/\{([a-zA-Z0-9_]+)\}/', '([^/]+)', $route->path);
+            $routePattern = "#^" . $routePattern . "$#";
+
+            if (preg_match($routePattern, $path, $matches)) {
+                array_shift($matches);
+                $route->params = $matches;
                 return $route;
             }
         }
@@ -91,6 +98,13 @@ class Router
 
         if (!$route->isMethod($httpMethod)) {
             throw new Exception("$httpMethod method not supported.");
+        }
+
+        $middlewareResult = $route->handleMiddleware();
+
+        if ($middlewareResult instanceof \app\Core\Contracts\Returns) {
+            $middlewareResult->execute();
+            return;
         }
 
         $return = $route->execController();

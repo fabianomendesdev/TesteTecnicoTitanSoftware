@@ -80,6 +80,16 @@ if (! function_exists('response')) {
     }
 }
 
+if (! function_exists('auth')) {
+    /**
+     * @return app\Core\Auth
+     */
+    function auth(): app\Core\Auth
+    {
+        return app\Core\Auth::getInstance();
+    }
+}
+
 if (! function_exists('env')) {
     /**
      * @param string $name

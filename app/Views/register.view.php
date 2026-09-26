@@ -1,7 +1,68 @@
 <?php view('layouts.base_top')->execute() ?>
 
-<main class="main" id="login">
-    REGISTER
+<main class="main" id="register">
+    <section id="section-register">
+        <h1 class="title-register">Cadastrar Novo Usuário</h1>
+
+        <form id="form-register" method="POST">
+            <div class="box-message">
+                <p id="message"></p>
+            </div>
+            <div>
+                <input 
+                    class="form-input"
+                    type="text"
+                    name="name"
+                    id="name"
+                    placeholder="Nome"
+                    max="120"
+                    required
+                    autocomplete="name"
+                >
+                <div class="box-errors">
+                    <p id="error-name"></p>
+                </div>
+            </div>
+            <div>
+                <input 
+                    class="form-input"
+                    type="email"
+                    name="email"
+                    id="email"
+                    placeholder="Email"
+                    max="120"
+                    required
+                    autocomplete="email"
+                >
+                <div class="box-errors">
+                    <p id="error-email"></p>
+                </div>
+            </div>
+            <div>
+                <input 
+                    class="form-input"
+                    type="password"
+                    name="password"
+                    id="password"
+                    placeholder="Senha"
+                    required
+                    autocomplete="password"
+                >
+                <div class="box-errors">
+                    <p id="error-password"></p>
+                </div>
+            </div>
+
+            <div>
+                <div>
+                    <button class="btn">Cadastrar</button>
+                </div>
+                <div>
+                    <a href="<?= route('login')->getFullPath() ?>">Entrar</a>
+                </div>
+            </div>
+        </form>
+    </section>
 </main>
 
 <?php view('layouts.base_footer')->execute() ?>
@@ -19,8 +80,8 @@ $(document).ready(function() {
         let email    = $('#email').val();
         let password = $('#password').val();
 
-        $.post('<?= route('store.login')->getFullPath() ?>', { 
-            email: name,
+        $.post('<?= route('store.register')->getFullPath() ?>', { 
+            name: name,
             email: email,
             password: password 
         }, function(response) {

@@ -6,16 +6,18 @@ use app\Models\Modal;
 
 class Service extends Modal
 {
-    protected static $tableName = 'tb_services';
-    protected static $columns = ['id', 'created_at', 'updated_at', 'description', 'status', 'value', 'employee_id'];
+    protected static string $tableName = 'service';
+    protected static string $primaryColumn = 'id_service';
+    protected static array $columns = ['id_service', 'description', 'price', 'created_at', 'update_at', 'finished_at', 'commission_user', 'user_id_user'];
 
-    protected $columnTypes = [
-        'id'          => 'integer',
-        'created_at'  => 'timestamp',
-        'updated_at'  => 'timestamp',
-        'description' => 'string',
-        'status'      => 'string',
-        'value'       => 'string',
-        'employee_id' => 'string'
+    protected static array $columnTypes = [
+        'id_service'      => 'integer',
+        'description'     => 'string',
+        'price'           => 'float',
+        'created_at'      => 'timestamp',
+        'update_at'       => 'timestamp',
+        'finished_at'     => 'timestamp',
+        'commission_user' => 'float',
+        'user_id_user'    => 'integer'
     ];
 }

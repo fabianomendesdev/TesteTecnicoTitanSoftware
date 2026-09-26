@@ -1,42 +1,34 @@
-CREATE DATABASE `db_teste_tecnico_titan`;
+CREATE DATABASE `db_sistema_controle_servico`;
 
-USE `db_teste_tecnico_titan`;
+USE `db_sistema_controle_servico`;
 
 -- TABELA UTILIZADA PARA SALVAR OS USUÁRIOS QUE VÃO EFETUAR O LOGIN NO SISTEMA
-CREATE TABLE `tb_users` (
-    `id` INT AUTO_INCREMENT NOT NULL,
-    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP(),
+CREATE TABLE `user` (
+    `id_user` BIGINT(20) AUTO_INCREMENT NOT NULL,
     `name` VARCHAR(120) NOT NULL,
     `email` VARCHAR(120) NOT NULL,
     `password` VARCHAR(60) NOT NULL,
-    PRIMARY KEY (`id`),
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP(),
+    `ativo` TINYINT(1) NULL DEFAULT 1,
+    `session_token` VARCHAR(255) NULL,
+    PRIMARY KEY (`id_user`),
     UNIQUE KEY `unq_user_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- TABELA UTILIZADA PARA CADASTRO DE FUNCIONÁRIOS NO SISTEMA
-CREATE TABLE `tb_employees` (
-    `id` INT AUTO_INCREMENT NOT NULL,
-    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE `service` (
+    `id_service` BIGINT(20) AUTO_INCREMENT NOT NULL,
+    `description` VARCHAR(45) NULL,
+    `price` DECIMAL(11,3) NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP(),
-    `name` VARCHAR(120) NOT NULL,
-    `position` VARCHAR(50) NULL DEFAULT NULL,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- TABELA UTILIZADA PARA SALVAR OS SERVIÇOS PRESTADOS PELOS FUNCIONÁRIOS
-CREATE TABLE `tb_services` (
-    `id` INT AUTO_INCREMENT NOT NULL,
-    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP(),
-    `description` TEXT NOT NULL,
-    `status` ENUM('P', 'I', 'H', 'C', 'X') NOT NULL DEFAULT 'P' COMMENT 'P - PENDING, I - IN_PROGRESS, H - ON_HOLD, C - COMPLETED, X - CANCELLED',
-    `value` DOUBLE NOT NULL,
-    `employee_id` INT NOT NULL,
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_service_employee` 
-        FOREIGN KEY (`employee_id`) 
-        REFERENCES `tb_employees`(`id`) 
+    `finished_at` DATETIME NULL,
+    `commission_user` DECIMAL(11,3) NULL,
+    `user_id_user` BIGINT(20) NOT NULL,
+    PRIMARY KEY (`id_service`),
+    CONSTRAINT `fk_service_user` 
+        FOREIGN KEY (`user_id_user`) 
+        REFERENCES `user`(`id_user`) 
         ON UPDATE CASCADE 
         ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

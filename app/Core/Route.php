@@ -2,23 +2,25 @@
 
 namespace app\Core;
 
-use app\Core\Controller;
 use app\Core\Router;
+use Closure;
 
 class Route
 {
-    public string $name = 'get.index';
+    public string $name = '';
     public string $httpMethod = 'GET';
     public string $path = '/';
-    public string $controller;
-    public Controller $intanceController;
+    public string $controller = '';
+    public mixed $intanceController = null;
     public string $method = 'index';
+    private ?Closure $middlewareCallback = null;
+    public array $params = [];
 
     private function generateDefaultName(): string
     {
-        return str_replace('/', '.', $this->controller) .
-                strtolower($this->httpMethod) .
-                $this->method;
+        return str_replace(['\\', '/'], '.', $this->controller) . 
+               '.' . strtolower($this->httpMethod) . 
+               '.' . $this->method . '_' . uniqid();
     }
 
     /**
@@ -61,6 +63,24 @@ class Route
         return $this->register('DELETE', $path, $action);
     }
 
+    public function _middleware($callback = null): self
+    {
+        if ($callback !== null) {
+            $this->middlewareCallback = Closure::fromCallable($callback);
+        }
+
+        return $this;
+    }
+
+    public function handleMiddleware(): mixed
+    {
+        if ($this->middlewareCallback) {
+            return ($this->middlewareCallback)();
+        }
+
+        return null;
+    }
+
     public function isMethod(string $method): bool
     {
         return strtoupper($this->httpMethod) === strtoupper($method);
@@ -78,6 +98,11 @@ class Route
 
         $this->name = $this->generateDefaultName();
         $this->httpMethod = strtoupper($httpMethod);
+
+        if (empty($this->name)) {
+            $this->name = $this->generateDefaultName();
+        }
+
         Router::getInstance()->addRoute($this->name, $this);
 
         return $this;
@@ -86,14 +111,18 @@ class Route
     public static function __callStatic(string $method, array $arguments)
     {
         $instance = new self();
+        return $instance->__call($method, $arguments);
+    }
 
+    public function __call(string $method, array $arguments)
+    {
         $internalMethod = '_' . $method;
 
-        if (method_exists($instance, $internalMethod)) {
-            return call_user_func_array([$instance, $internalMethod], $arguments);
+        if (method_exists($this, $internalMethod)) {
+            return call_user_func_array([$this, $internalMethod], $arguments);
         }
 
-        $className = get_class($instance);
+        $className = static::class;
         throw new \Exception("Method {$method} does not exist in class {$className}.");
     }
 
@@ -105,7 +134,11 @@ class Route
 
     public function execController()
     {
-        return $this->intanceController->{$this->method}();
+        if (!$this->intanceController) {
+            throw new \Exception("Controller instance not initialized for route {$this->path}");
+        }
+
+        return call_user_func_array([$this->intanceController, $this->method], $this->params);
     }
 
     public function getPath(): string
@@ -113,10 +146,16 @@ class Route
         return $this->path;
     }
 
-    public function getFullPath(): string
+    public function getFullPath(array $queryParams = []): string
     {
         $appUrl = rtrim(env('APP_URL', ''), '/');
-        return $appUrl . $this->path;
+        $path   = $this->path;
+
+        if (!empty($queryParams)) {
+            $path .= '?' . http_build_query($queryParams);
+        }
+
+        return $appUrl . $path;
     }
 
     private function setPath(string $path): void
@@ -148,17 +187,26 @@ class Route
         if (is_array($action)) {
             $controller = $action[0] ?? '';
             $method     = $action[1] ?? $defaultMethod;
+
+            if ($controller instanceof \Closure) {
+                $reflector = new \ReflectionFunction($controller);
+                $controller = $reflector->getClosureThis() ?? $controller;
+            }
+
+            if (is_object($controller)) {
+                $controller = get_class($controller);
+            }
         } else if (is_string($action) && str_contains($action, '@')) {
             [$controller, $method] = explode('@', $action);
         } else {
-            $controller = '';
+            $controller = is_string($action) ? $action : '';
             $method     = $defaultMethod;
         }
 
-        if (!str_starts_with($controller, 'app\Controllers\\') && !str_starts_with($controller, '\\')) {
-            $controller = 'app\Controllers\\' . $controller;
+        if (!str_starts_with($controller, 'app\\Controllers\\') && !str_starts_with($controller, '\\')) {
+            $controller = 'app\\Controllers\\' . $controller;
         }
         
-        return [$controller, $method];
+        return [ltrim($controller, '\\'), $method];
     }
 }

@@ -1,7 +1,7 @@
 <header class="dashboard-header">
-    <div class="header-toogle show">
+    <div class="header-toogle">
     </div>
-    <div class="header-right show">
+    <div class="header-right">
         <a href="#" id="btn-toggle-nav">
             <img 
                 class="open"
@@ -15,21 +15,23 @@
             >
         </a>
         <div>
-            <?php if (isset($_SESSION['user'])): ?>
-                <span><?=  $_SESSION['user']->name ?? 'NÃO LOGADO' ?></span>
-            <?php endif ?>
             <a href="<?= route('logout')->getPath() ?>">Sair</a>
         </div>
     </div>
 </header>
 
 <div class="dashboard-body">
-    <aside class="dashboard-aside show">
+    <aside class="dashboard-aside">
+        <div class="user-info">
+            <span>Logado como: </span>
+            <?php if (auth()->check()): ?>
+                <span><?=  auth()->user()->name ?? 'NÃO LOGADO' ?></span>
+            <?php endif ?>
+        </div>
         <nav class="dashboard-nav">
             <ul class="dashboard-nav-list">
                 <li><a href="<?= route('dashboard')->getPath() ?>" class="active">Dashboard</a></li>
-                <li><a href="<?= route('services')->getPath() ?>">Serviços</a></li>
-                <li><a href="<?= route('employees')->getPath() ?>">Funcionários</a></li>
+                <li><a href="<?= route('create.service')->getPath() ?>">Cadastrar Serviço</a></li>
             </ul>
         </nav>
     </aside>

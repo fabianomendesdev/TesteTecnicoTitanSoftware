@@ -4,6 +4,7 @@ namespace app\Core;
 
 use app\Core\Contracts\Returns;
 use app\Core\Exceptions\ViewNotFoundException;
+use app\Core\Session;
 
 class ViewResponse implements Returns
 {
@@ -26,10 +27,11 @@ class ViewResponse implements Returns
     {
         $fileName = $this->getFileName();
         if (!file_exists($fileName)) {
-            throw new ViewNotFoundException("View '$viewName' não encontada!");
+            throw new ViewNotFoundException("View '$this->viewName' não encontada!");
         }
-            
+
         extract($this->data);
+        Session::start();
 
         require $fileName;
 

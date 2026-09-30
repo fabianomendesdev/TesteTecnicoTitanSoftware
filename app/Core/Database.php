@@ -18,7 +18,7 @@ class Database
             $port = env('DB_PORT', 3306);
             $user = env('DB_USERNAME', 'admin');
             $password = env('DB_PASSWORD', 'admin');
-            $name = env('DB_NAME', 'db_teste_tecnico_titan');
+            $name = env('DB_NAME', 'db_sistema_controle_servico');
 
             $this->connection = new PDO(
                 "mysql:host=$host;port={$port};dbname=$name;charset=utf8mb4", 
@@ -34,6 +34,11 @@ class Database
         }
     }
 
+    /**
+     * Retorna a instância única (Singleton) da classe.
+     * 
+     * @return self
+     */
     public static function getInstance(): Self
     {
         if (self::$instance == null) {
@@ -43,16 +48,34 @@ class Database
         return self::$instance;
     }
 
+    /**
+     * Retorna a conexão PDO
+     * 
+     * @return PDO
+     */
     public function getConn(): PDO
     {
         return $this->connection;
     }
 
+    /**
+     * Executa um SQL no banco de dados
+     * Caso o $idColumnName esteja sendo passado por parametro
+     * é retornado o último id inserido na tabela
+     * Caso não tenha passado $idColumnName retorna a quantidade 
+     * de linhas alteradas no banco de dados
+     * 
+     * @param string $sql
+     * @param array $params
+     * @param ?string $idColumnName
+     * @return int
+     */
     public function sqlExec(string $sql, array $params = [], ?string $idColumnName = null): int
     {
         try {
             $stmt = $this->connection->prepare($sql);
 
+            // Percore todos os parametros recebidos e faz o bindValue
             foreach ($params as $column => $param) {
                 $value = $param[0] ?? null;
                 $type  = $param[1] ?? PDO::PARAM_STR;
@@ -64,17 +87,26 @@ class Database
 
             if (!$idColumnName) return (int) $this->connection->lastInsertId();
 
+            // Retorna a quantidade de linhas alteradas
             return (int) $stmt->rowCount();
         } catch (PDOException $e) {
             throw new \Exception("Erro exec: " . $e->getMessage());
         }
     }
 
-    public function getResult(string $sql, array $params = [])
+    /**
+     * Executa um SQL e retorna os dados buscados no banco de dados
+     * 
+     * @param string $sql
+     * @param array $params
+     * @return array
+     */
+    public function getResult(string $sql, array $params = []): array
     {
         try {
             $stmt = $this->connection->prepare($sql);
 
+            // Percore todos os parametros recebidos e faz o bindValue
             foreach ($params as $column => $param) {
                 $value = $param[0] ?? null;
                 $type  = $param[1] ?? PDO::PARAM_STR;

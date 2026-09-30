@@ -17,21 +17,36 @@ class Request
         $this->data = array_merge($_GET, $_POST, $inputData);
     }
 
-    public function all(): Array
+    /**
+     * Retorna todos os dados GET, POST, PUT e etc enviados por requisições
+     * 
+     * @return array
+     */
+    public function all(): array
     {
         return $this->data;
     }
 
+    /**
+     * Recebe parametros de campos para validação e faz a validação desses campos
+     * 
+     * @param array $validations
+     * @return array
+     */
     public function validate(array $validations): array
     {
         $errors = [];
 
+        // Percorre todos os campos de validações
         foreach ($validations as $field => $validation) {
+            // Separa as rules por '|'
             $rules = explode('|', $validation);
 
-            foreach ($rules as $i => $rule) {
+            // Percorre todas as rules
+            foreach ($rules as $rule) {
                 $ruleNameValue = [];
 
+                // Caso contenha ':' o que seria uma valição complexa então faz o explode
                 if (str_contains($rule, ':')) {
                     $ruleNameValue = explode(':', $rule);
                 }
@@ -77,6 +92,7 @@ class Request
                             $column = $params[1] ?? $field;
 
                             if ($table) {
+                                // Conta a quantidade de linhas pelo valor e coluna passados
                                 $database = Database::getInstance();
                                 $result = $database->getResult(
                                     "SELECT COUNT(*) as total FROM {$table} WHERE {$column} = :val LIMIT 1",

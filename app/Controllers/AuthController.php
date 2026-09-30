@@ -89,6 +89,6 @@ class AuthController extends Controller
     public function logout()
     {
         Session::destroy();
-        return response()->redirect(route('login')->getFullPath());
+        return response()->redirectToRoute('login');
     }
 }

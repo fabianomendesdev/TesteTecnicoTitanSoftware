@@ -6,14 +6,14 @@ use app\Controllers\RegisterController;
 // MIDDLEWARE LOGED
 $logedMiddleware = function() {
     if (!auth()->check()) {
-        return response()->redirect(route('login')->getFullPath());
+        return response()->redirectToRoute('login');
     }
 };
 
 // MIDDLEWARE GUEST
 $guestMiddleware = function() {
     if (auth()->check()) {
-        return response()->redirect(route('dashboard')->getFullPath());
+        return response()->redirectToRoute('dashboard');
     }
 };
 

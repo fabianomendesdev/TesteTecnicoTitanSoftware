@@ -62,7 +62,7 @@ class ServiceController extends Controller
     {
         if (!auth()->user()->isAdmin()) {
             return response()
-                ->redirect(route('dashboard')->getFullPath());
+                ->redirectToRoute('dashboard');
         }
 
         $request = request()->all();
@@ -73,7 +73,7 @@ class ServiceController extends Controller
 
         if (!$service) {
             return response()
-                ->redirect(route('dashboard')->getFullPath());
+                ->redirectToRoute('dashboard');
         }
 
         return view('createOrEdit.service', [
@@ -87,7 +87,7 @@ class ServiceController extends Controller
     {
         if (!auth()->user()->isAdmin()) {
             return response()
-                ->redirect(route('dashboard')->getFullPath());
+                ->redirectToRoute('dashboard');
         }
 
         $service = Service::where(['id_service' => $idService])->first();
@@ -138,7 +138,7 @@ class ServiceController extends Controller
     {
         if (!auth()->user()->isAdmin()) {
             return response()
-                ->redirect(route('dashboard')->getFullPath());
+                ->redirectToRoute('dashboard');
         }
 
         $service = Service::where(['id_service' => $idService])->first();
@@ -171,7 +171,7 @@ class ServiceController extends Controller
     {
         if (!auth()->user()->isAdmin()) {
             return response()
-                ->redirect(route('dashboard')->getFullPath());
+                ->redirectToRoute('dashboard');
         }
         
         $service = Service::where(['id_service' => $idService])->first();

@@ -38,11 +38,14 @@ class RegisterController extends Controller
         $validated = $request->all();
 
         try {
+            $noUser = User::first();
+
             $user = User::create([
                 'name'     => $validated['name']  ?? '',
                 'email'    => $validated['email'] ?? '',
                 'password' => password_hash($validated['password'] ?? '', PASSWORD_DEFAULT),
-                'ativo'    => true
+                'ativo'    => true,
+                'is_admin' => !$noUser
             ]);
 
             return response()->json([

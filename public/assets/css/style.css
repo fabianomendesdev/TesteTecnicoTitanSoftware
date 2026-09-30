@@ -306,6 +306,60 @@ footer.dashboard-footer {
     text-align: center;
     font-size: 1.75rem;
 }
+
+/* AÇÃO */
+.main#login #form-login .login-actions,
+.main#register #form-register .register-actions {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 3rem;
+    gap: 16px;
+    width: 100%;
+}
+
+.main#login #form-login .box-button,
+.main#login #form-login .box-create-account,
+.main#register #form-register .box-button,
+.main#register #form-register .box-login {
+    flex: 1 1 140px;
+    height: 3rem;
+    align-items: center;
+}
+
+.main#login #form-login .box-button,
+.main#register #form-register .box-button {
+    min-width: 150px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.main#login #form-login .box-button > button,
+.main#register #form-register .box-button > button {
+    width: 100%;
+    max-width: 10rem;
+    height: 100%;
+}
+
+.main#login #form-login .box-create-account,
+.main#register #form-register .box-login {
+    min-width: 100px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.main#login #form-login .box-create-account a,
+.main#register #form-register .box-login a {
+    color: rgb(59, 59, 214);
+    text-decoration: none;
+}
+
+.main#login #form-login .box-create-account a:hover,
+.main#register #form-register .box-login a:hover {
+    text-decoration: underline;
+}
+/* FIM AÇÃO */
 /* FIM LOGIN E CADASTRO */
 
 /* LOGIN */
@@ -329,51 +383,30 @@ footer.dashboard-footer {
 .main#login #form-login > .login-input > .box-errors {
     text-align: center;
 }
-
-.main#login #form-login .login-actions {
-    display: flex;
-    flex-wrap: wrap-reverse;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 3rem;
-    gap: 16px;
-    width: 100%;
-}
-
-.main#login #form-login .box-button,
-.main#login #form-login .box-create-account {
-    flex: 1 1 140px;
-    height: 3rem;
-    align-items: center;
-}
-
-.main#login #form-login .box-button {
-    min-width: 150px;
-    display: flex;
-    justify-content: flex-start;
-}
-
-.main#login #form-login .box-button > button {
-    width: 100%;
-    max-width: 10rem;
-    height: 100%;
-}
-
-.main#login #form-login .box-create-account {
-    min-width: 100px;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.main#login #form-login .box-create-account a {
-    color: rgb(59, 59, 214);
-    text-decoration: none;
-}
-
-.main#login #form-login .box-create-account a:hover {
-    text-decoration: underline;
-}
 /* FIM LOGIN */
+
+/* REGISTRO */
+.main#register #form-register {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2rem;
+    gap: 2rem;
+}
+
+.main#register #form-register > .register-input {
+    width: 100%;
+}
+
+.main#register #form-register > .register-input > input {
+    width: 100%;
+    height: 3rem;
+    text-align: center;
+}
+
+.main#register #form-register > .register-input > .box-errors {
+    text-align: center;
+}
+/* FIM REGISTRO */
 
 /* DASHBOARD */
 

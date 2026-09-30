@@ -90,9 +90,9 @@ $(document).ready(function() {
                     $('#error-password').text('');
                     $('#email').val('');
                     $('#password').val('');
+                } else {
+                    console.log(response)
                 }
-            } else {
-                // Erro generico
             }
         });
     });

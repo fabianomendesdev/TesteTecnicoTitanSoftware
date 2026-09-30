@@ -8,7 +8,13 @@ class Request
 
     public function __construct()
     {
-        $this->data = array_merge($_GET, $_POST);
+        $inputData = [];
+
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        if (in_array($method, ['PUT', 'PATCH'])) {
+            parse_str(file_get_contents('php://input'), $inputData);
+        }
+        $this->data = array_merge($_GET, $_POST, $inputData);
     }
 
     public function all(): Array
@@ -23,9 +29,10 @@ class Request
         foreach ($validations as $field => $validation) {
             $rules = explode('|', $validation);
 
-            foreach ($rules as $rule) {
+            foreach ($rules as $i => $rule) {
                 $ruleNameValue = [];
-                if (str_contains(':', $rule)) {
+
+                if (str_contains($rule, ':')) {
                     $ruleNameValue = explode(':', $rule);
                 }
 

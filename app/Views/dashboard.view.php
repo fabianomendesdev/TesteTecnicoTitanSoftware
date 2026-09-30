@@ -44,6 +44,7 @@
         </div>
     </div>
 
+    <?php if(auth()->user()->isAdmin()): ?>
     <div class="box-filter">
         <form method="get">
             <?php
@@ -125,7 +126,7 @@
                     </button>
                     <button
                         class="btn"
-                        onclick="updateItem(<?= $service->id_service ?>)"
+                        onclick="updateItem('<?= route('edit.service', $service->id_service)->getFullPath() ?>')"
                         title="ALTERAR"
                     >
                         ALTERAR
@@ -144,6 +145,7 @@
             <?php endforeach ?>
         </tbody>
     </table>
+    <?php endif ?>
 </main>
 
 <?php view('layouts.footer')->execute() ?>
@@ -179,8 +181,8 @@ function deleteItem(serviceId) {
     }
 }
 
-function updateItem(serviceId) {
-    console.log('updateItem:', serviceId);
+function updateItem(href) {
+    location.href = href || '#';
 }
 
 function finishItem(serviceId) {
@@ -192,7 +194,7 @@ function finishItem(serviceId) {
 
         $.ajax({
             url: url,
-            type: 'POST',
+            type : 'POST',
             dataType: 'json',
             success: function(response) {
                 if (response && response.message) {

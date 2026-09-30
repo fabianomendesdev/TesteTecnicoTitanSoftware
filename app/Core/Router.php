@@ -80,9 +80,19 @@ class Router
         return null;
     }
 
-    public function getRouteByName(string $routeName): Route|null
+    public function getRouteByName(string $routeName, array $params = []): Route|null
     {
-        return $this->routes[$routeName] ?? null;
+        $route = $this->routes[$routeName] ?? null;
+
+        if ($route) {
+            $routeClone = clone $route;
+            if (!empty($params)) {
+                $routeClone->params = $params;
+            }
+            return $routeClone;
+        }
+
+        return null;
     }
 
     public function process(): void

@@ -8,7 +8,7 @@
             <div class="box-message">
                 <p id="message"></p>
             </div>
-            <div>
+            <div class="register-input">
                 <input 
                     class="form-input"
                     type="text"
@@ -23,7 +23,7 @@
                     <p id="error-name"></p>
                 </div>
             </div>
-            <div>
+            <div class="register-input">
                 <input 
                     class="form-input"
                     type="email"
@@ -38,7 +38,7 @@
                     <p id="error-email"></p>
                 </div>
             </div>
-            <div>
+            <div class="register-input">
                 <input 
                     class="form-input"
                     type="password"
@@ -53,11 +53,11 @@
                 </div>
             </div>
 
-            <div>
-                <div>
-                    <button class="btn">Cadastrar</button>
+            <div class="register-actions">
+                <div class="box-button">
+                    <button class="btn btn-primary" id="btn-register" type="submit">Cadastrar</button>
                 </div>
-                <div>
+                <div class="box-login">
                     <a href="<?= route('login')->getFullPath() ?>">Entrar</a>
                 </div>
             </div>
@@ -93,13 +93,22 @@ $(document).ready(function() {
             let response = xhr.responseJSON;
 
             if (response) {
-                if (response.errors) {
+                if (response?.errors) {
                     $.each(response.errors, function(field, messages) {
                         let text = messages[0];
                         $('#error-' + field).text(text);
                     });
+                } else if (response?.message) {
+                    $('#message').text(response?.message);
+                    $('#error-name').text('');
+                    $('#error-email').text('');
+                    $('#error-password').text('');
+                    $('#name').val('');
+                    $('#email').val('');
+                    $('#password').val('');
+                } else {
+                    console.log(response)
                 }
-            } else if (response.message) {
             }
         });
     });

@@ -13,8 +13,9 @@ class ServiceController extends Controller
     {
         $request = request()->all();
 
-        return view('create.service', [
-            'request' => $request
+        return view('createOrEdit.service', [
+            'request' => $request,
+            'type'    => 'create'
         ]);
     }
 
@@ -57,9 +58,90 @@ class ServiceController extends Controller
         }
     }
 
-    public function destroy(int $id_service)
+    public function edit(int $idService)
     {
-        $service = Service::where(['id_service' => $id_service])->first();
+        if (!auth()->user()->isAdmin()) {
+            return response()
+                ->redirect(route('dashboard')->getFullPath());
+        }
+
+        $request = request()->all();
+
+        $service = Service::where([
+            'id_service' => $idService
+        ])->first();
+
+        if (!$service) {
+            return response()
+                ->redirect(route('dashboard')->getFullPath());
+        }
+
+        return view('createOrEdit.service', [
+            'request' => $request,
+            'type'    => 'update',
+            'service' => $service
+        ]);
+    }
+
+    public function update(int $idService)
+    {
+        if (!auth()->user()->isAdmin()) {
+            return response()
+                ->redirect(route('dashboard')->getFullPath());
+        }
+
+        $service = Service::where(['id_service' => $idService])->first();
+
+        if (!$service) {
+            return response()->json([
+                'success' => false,
+                'message' => "Serviço não encontrado!"
+            ], 404);
+        }
+
+        $request = request();
+
+        $errors = $request->validate([
+            'description' => 'required|string',
+            'price'       => 'required|numeric'
+        ]);
+
+        if ($errors) {
+            return response()->json([
+                'success' => false,
+                'message' => "Erro de validação",
+                'errors'  => $errors
+            ], 400);
+        }
+
+        $validated = $request->all();
+
+        try {
+            $service->description = $validated['description'] ?? '';
+            $service->price       = $validated['price'] ?? 0;
+            $service->save();
+
+            return response()->json([
+                'success'  => true,
+                'message'  => "Serviço atualizado com sucesso!",
+                'redirect' => route('dashboard')->getFullPath()
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'success' => false,
+                'message' => "Erro no servidor: " . $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function destroy(int $idService)
+    {
+        if (!auth()->user()->isAdmin()) {
+            return response()
+                ->redirect(route('dashboard')->getFullPath());
+        }
+
+        $service = Service::where(['id_service' => $idService])->first();
 
         if (!$service) {
             return response()->json([
@@ -85,9 +167,14 @@ class ServiceController extends Controller
         ], 200);
     }
 
-    public function finish(int $id_service)
+    public function finish(int $idService)
     {
-        $service = Service::where(['id_service' => $id_service])->first();
+        if (!auth()->user()->isAdmin()) {
+            return response()
+                ->redirect(route('dashboard')->getFullPath());
+        }
+        
+        $service = Service::where(['id_service' => $idService])->first();
 
         if (!$service) {
             return response()->json([

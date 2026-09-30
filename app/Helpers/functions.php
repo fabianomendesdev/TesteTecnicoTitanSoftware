@@ -34,11 +34,16 @@ if (! function_exists('view')) {
 if (! function_exists('route')) {
     /**
      * @param string $routeName
+     * @param mixed ...$params
      * @return Route
      */
-    function route(string $routeName): Route
-    {   
-        $route = Router::getInstance()->getRouteByName($routeName);
+    function route(string $routeName, ...$params): Route
+    {
+        if (count($params) === 1 && is_array($params[0])) {
+            $params = $params[0];
+        }
+
+        $route = Router::getInstance()->getRouteByName($routeName, $params);
 
         if (!$route)
             throw new Exception('Route Not Found.');

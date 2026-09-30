@@ -141,15 +141,45 @@ class Route
         return call_user_func_array([$this->intanceController, $this->method], $this->params);
     }
 
+    private function getProcessedPath(): string
+    {
+        $path = $this->path;
+
+        if (empty($this->params)) return $path;
+
+        $isAssoc = array_keys($this->params) !== range(0, count($this->params) - 1);
+
+        if ($isAssoc) {
+            foreach ($this->params as $key => $value) {
+                $path = preg_replace('/\{' . $key . '(\?[^\}]*)?\}/', $value, $path);
+            }
+        } else {
+            $paramIndex = 0;
+            $params = $this->params;
+            
+            $path = preg_replace_callback('/\{([a-zA-Z0-9_]+)(\?[^\}]*)?\}/', function($matches) use ($params, &$paramIndex) {
+                if (isset($params[$paramIndex])) {
+                    $val = $params[$paramIndex];
+                    $paramIndex++;
+                    return $val;
+                }
+                return $matches[0];
+            }, $path);
+        }
+
+        return $path;
+    }
+
     public function getPath(): string
     {
-        return $this->path;
+        return $this->getProcessedPath();
     }
 
     public function getFullPath(array $queryParams = []): string
     {
+        
         $appUrl = rtrim(env('APP_URL', ''), '/');
-        $path   = $this->path;
+        $path   = $this->getProcessedPath();
 
         if (!empty($queryParams)) {
             $path .= '?' . http_build_query($queryParams);

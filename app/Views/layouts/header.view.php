@@ -26,6 +26,9 @@
             <span>Logado como: </span>
             <?php if (auth()->check()): ?>
                 <span><?=  auth()->user()->name ?? 'NÃO LOGADO' ?></span>
+                <?php if (auth()->user()->isAdmin()): ?>
+                    <span> (Admin)</span>
+                <?php endif ?>
             <?php endif ?>
         </div>
         <nav class="dashboard-nav">

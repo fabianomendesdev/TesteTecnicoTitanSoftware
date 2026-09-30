@@ -8,7 +8,7 @@ class User extends Modal
 {
     protected static string $tableName = 'user';
     protected static string $primaryColumn = 'id_user';
-    protected static array $columns = ['id_user', 'name', 'email', 'password', 'created_at', 'updated_at', 'ativo', 'session_token'];
+    protected static array $columns = ['id_user', 'name', 'email', 'password', 'created_at', 'updated_at', 'ativo', 'is_admin', 'session_token'];
 
     protected static array $hidden = ['password', 'session_token'];
 
@@ -20,6 +20,7 @@ class User extends Modal
         'created_at'    => 'timestamp',
         'updated_at'    => 'timestamp',
         'ativo'         => 'boolean',
+        'is_admin'      => 'boolean',
         'session_token' => 'string'
     ];
 
@@ -44,5 +45,10 @@ class User extends Modal
         }
 
         return password_verify($password, $hash);
+    }
+
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
     }
 }

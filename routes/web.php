@@ -23,12 +23,24 @@ Route::middleware($logedMiddleware)
     ->name('dashboard');
 
 // Service Controller
+// Editar serviço
 Route::middleware($logedMiddleware)
     ->get('/servicos', 'ServiceController@create')
     ->name('create.service');
 Route::middleware($logedMiddleware)
     ->post('/cadastrar-servico', 'ServiceController@store')
     ->name('store.service');
+// FIM Editar serviço
+
+// Editar serviço
+Route::middleware($logedMiddleware)
+    ->get('/servicos/{id_service}/editar', 'ServiceController@edit')
+    ->name('edit.service');
+Route::middleware($logedMiddleware)
+    ->put('/editar-servico/{id_service}', 'ServiceController@update')
+    ->name('update.service');
+// FIM Editar serviço
+
 Route::middleware($logedMiddleware)
     ->delete('/servicos/{id_service}', 'ServiceController@destroy')
     ->name('destroy.service');

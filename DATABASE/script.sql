@@ -10,12 +10,14 @@ CREATE TABLE `user` (
     `password` VARCHAR(60) NOT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP(),
-    `ativo` TINYINT(1) NULL DEFAULT 1,
+    `ativo` TINYINT NULL DEFAULT 1,
+    `is_admin` TINYINT NOT NULL DEFAULT 0,
     `session_token` VARCHAR(255) NULL,
     PRIMARY KEY (`id_user`),
     UNIQUE KEY `unq_user_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- TABELA UTLIZADA PARA SALVAR OS SERVIÇOS CADASTRADOS NO SISTEMA
 CREATE TABLE `service` (
     `id_service` BIGINT(20) AUTO_INCREMENT NOT NULL,
     `description` VARCHAR(45) NULL,

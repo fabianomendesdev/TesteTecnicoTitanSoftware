@@ -19,7 +19,7 @@ class ViewResponse implements Returns
 
     public function getFileName(): string
     {
-        $viewNameNomalized = str_replace('.', '/', strtolower($this->viewName));
+        $viewNameNomalized = str_replace('.', '/', $this->viewName);
         return VIEW_PATH . "/$viewNameNomalized.view.php";
     }
 

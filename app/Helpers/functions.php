@@ -52,6 +52,18 @@ if (! function_exists('route')) {
     }
 }
 
+if (! function_exists('isRoute')) {
+    /**
+     * @param string $routeName
+     * @return bool
+     */
+    function isRoute(string $routeName): bool
+    {
+       return Router::getInstance()->isRoute($routeName);
+    }
+}
+
+
 if (! function_exists('assets')) {
     /**
      * @param string $path

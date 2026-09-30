@@ -4,16 +4,19 @@
 <main class="dashboard-main" id="dashboard">
     <h1>DASHBOARD</h1>
 
-    <div>
+    <!-- Valor total serviço -->
+    <div class="dashboard-card-total">
         <h2>Valor total serviço</h2>
         <div>
             R$ <?= number_format($totService, 2, ',', '.') ?>
         </div>
     </div>
+    <!-- FIM Valor total serviço -->
 
+    <!-- Tabelas de Últimos Serviços e Serviços Pendentes -->
     <div class="box-mini-table">
         <div class="mini-table">
-            <h3 class="mini-table-title">Ultimos Serviços</h3>
+            <h3 class="mini-table-title">Últimos Serviços</h3>
             <?php if (count($recentServices) > 0): ?>
             <ul class="mini-table-service-list">
                 <?php foreach ($recentServices as $i => $service): ?>
@@ -43,6 +46,7 @@
             <?php endif ?>
         </div>
     </div>
+    <!-- FIM Tabelas de Últimos Serviços e Serviços Pendentes -->
 
     <?php if(auth()->user()->isAdmin()): ?>
     <div class="box-filter">
@@ -97,54 +101,58 @@
         </form>
     </div>
 
-    <table class="service-table">
-        <thead>
-            <tr>
-                <th style="text-align: start;">ID</th>
-                <th style="text-align: start;">DESCRIÇÃO</th>
-                <th style="text-align: center;">STATUS</th>
-                <th style="text-align: center;">VALOR</th>
-                <th style="text-align: start;">USUÁRIO</th>
-                <th style="text-align: start;">OPÇÕES</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($allServices as $i => $service): ?>
-            <tr>
-                <td style="text-align: start;"><?= str_pad($service->id_service, 7, '0', STR_PAD_LEFT) ?></td>
-                <td style="text-align: start;"><?= $service->description ?></td>
-                <td style="text-align: center;"><?= $service->finished_at ? 'FINALIZADO' : 'PENDENTE' ?></td>
-                <td style="text-align: center;">R$ <?= number_format($service->price, 2, ',', '.') ?></td>
-                <td style="text-align: start;"><?= $service?->user?->name ?></td>
-                <td style="text-align: start;">
-                    <button
-                        class="btn"
-                        onclick="deleteItem(<?= $service->id_service ?>)"
-                        title="EXCLUIR"
-                    >
-                        EXCLUIR
-                    </button>
-                    <button
-                        class="btn"
-                        onclick="updateItem('<?= route('edit.service', $service->id_service)->getFullPath() ?>')"
-                        title="ALTERAR"
-                    >
-                        ALTERAR
-                    </button>
-                    <?php if(!$service->finished_at): ?>
-                    <button
-                        class="btn"
-                        onclick="finishItem(<?= $service->id_service ?>)"
-                        title="FINALIZAR"
-                    >
-                        FINALIZAR
-                    </button>
-                    <?php endif ?>
-                </td>
-            </tr>
-            <?php endforeach ?>
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="service-table">
+            <thead>
+                <tr>
+                    <th style="text-align: start;">ID</th>
+                    <th style="text-align: start;">DESCRIÇÃO</th>
+                    <th style="text-align: center;">STATUS</th>
+                    <th style="text-align: center;">VALOR</th>
+                    <th style="text-align: start;">USUÁRIO</th>
+                    <th style="text-align: start;">OPÇÕES</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($allServices as $i => $service): ?>
+                <tr>
+                    <td style="text-align: start;"><?= str_pad($service->id_service, 7, '0', STR_PAD_LEFT) ?></td>
+                    <td style="text-align: start;"><?= $service->description ?></td>
+                    <td style="text-align: center;"><?= $service->finished_at ? 'FINALIZADO' : 'PENDENTE' ?></td>
+                    <td style="text-align: center;">R$ <?= number_format($service->price, 2, ',', '.') ?></td>
+                    <td style="text-align: start;"><?= $service?->user?->name ?></td>
+                    <td style="text-align: start;">
+                        <div class="table-actions">
+                            <button
+                                class="btn btn-danger"
+                                onclick="deleteItem(<?= $service->id_service ?>)"
+                                title="EXCLUIR"
+                            >
+                                EXCLUIR
+                            </button>
+                            <button
+                                class="btn btn-warning"
+                                onclick="updateItem('<?= route('edit.service', $service->id_service)->getFullPath() ?>')"
+                                title="ALTERAR"
+                            >
+                                ALTERAR
+                            </button>
+                            <?php if(!$service->finished_at): ?>
+                            <button
+                                class="btn btn-primary"
+                                onclick="finishItem(<?= $service->id_service ?>)"
+                                title="FINALIZAR"
+                            >
+                                FINALIZAR
+                            </button>
+                            <?php endif ?>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach ?>
+            </tbody>
+        </table>
+    </div>
     <?php endif ?>
 </main>
 

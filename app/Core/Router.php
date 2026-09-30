@@ -8,6 +8,7 @@ use Exception;
 class Router
 {
     private static ?Router $instance = null;
+    private ?Route $currentRoute = null;
     private array $routes = [];
 
     private function __construct() {}
@@ -20,6 +21,16 @@ class Router
         }
 
         return self::$instance;
+    }
+
+    public function getCurrentRouteName(): ?string
+    {
+        return $this->currentRoute?->name;
+    }
+
+    public function isRoute(string $name): bool
+    {
+        return $name === $this->getCurrentRouteName();
     }
 
     public function addRoute(string $name, Route $route): Route
@@ -109,6 +120,8 @@ class Router
         if (!$route->isMethod($httpMethod)) {
             throw new Exception("$httpMethod method not supported.");
         }
+
+        $this->currentRoute = $route;
 
         $middlewareResult = $route->handleMiddleware();
 

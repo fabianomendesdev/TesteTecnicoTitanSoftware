@@ -16,6 +16,12 @@ class Route
     private ?Closure $middlewareCallback = null;
     public array $params = [];
 
+    /**
+     * Gera e retorna um nome default para a rota
+     * É usuado quando o nome dá rota não tive preenchido
+     * 
+     * @return string
+     */
     private function generateDefaultName(): string
     {
         return str_replace(['\\', '/'], '.', $this->controller) . 
@@ -24,6 +30,8 @@ class Route
     }
 
     /**
+     * Registra a rota como sendo uma rota GET
+     * 
      * @param string $path
      * @param array|string $action
      * @return self
@@ -34,6 +42,8 @@ class Route
     }
 
     /**
+     * * Registra a rota como sendo uma rota POST
+     * 
      * @param string $path
      * @param array|string $action
      * @return self
@@ -44,6 +54,8 @@ class Route
     }
 
     /**
+     * Registra a rota como sendo uma rota PUT
+     * 
      * @param string $path
      * @param array|string $action
      * @return self
@@ -54,6 +66,8 @@ class Route
     }
 
     /**
+     * Registra a rota como sendo uma rota DELETE
+     * 
      * @param string $path
      * @param array|string $action
      * @return self
@@ -63,6 +77,11 @@ class Route
         return $this->register('DELETE', $path, $action);
     }
 
+    /**
+     * Define o middleware de acesso da rota
+     * 
+     * @return self
+     */
     public function _middleware($callback = null): self
     {
         if ($callback !== null) {
@@ -72,6 +91,11 @@ class Route
         return $this;
     }
 
+    /**
+     * Executa a callback do middleware
+     * 
+     * @return mixed
+     */
     public function handleMiddleware(): mixed
     {
         if ($this->middlewareCallback) {
@@ -81,16 +105,36 @@ class Route
         return null;
     }
 
+    /**
+     * Retorna um valor verdadeiro ou falso na comparação do parâmetro $method
+     * com o method http da rota
+     * 
+     * @param string $method
+     * @return bool
+     */
     public function isMethod(string $method): bool
     {
         return strtoupper($this->httpMethod) === strtoupper($method);
     }
 
+    /**
+     * Retorna o method http aceito pela rota atual
+     * 
+     * @return string
+     */
     public function getHttpMethod(): string 
     {
         return $this->httpMethod;
     }
 
+    /**
+     * Registra uma rota adicionando a class Router
+     * 
+     * @param string $httpMethod
+     * @param string $path
+     * @param array|string $action
+     * @return self
+     */
     private function register(string $httpMethod, string $path, array|string $action): self
     {
         $this->setPath($path);
@@ -108,13 +152,30 @@ class Route
         return $this;
     }
 
+    /**
+     * Intercepta chamadas a métodos estáticos na classe
+     * instancia a class e executa o method
+     * 
+     * @param string $method
+     * @param array $arguments
+     * @return mixed
+     */
     public static function __callStatic(string $method, array $arguments)
     {
         $instance = new self();
         return $instance->__call($method, $arguments);
     }
 
-    public function __call(string $method, array $arguments)
+    /**
+     * Intercepta chamadas a métodos de instância inexistentes
+     * e executa com '_' antes do method
+     * 
+     * @param string $method
+     * @param array $arguments
+     * @return mixed
+     * @throws \Exception
+     */
+    public function __call(string $method, array $arguments): mixed
     {
         $internalMethod = '_' . $method;
 
@@ -126,13 +187,24 @@ class Route
         throw new \Exception("Method {$method} does not exist in class {$className}.");
     }
 
+    /**
+     * Atualiza o nome atual da rota
+     * 
+     * @param string $name
+     * @return self
+     */
     public function name(string $name): self
     {
         Router::getInstance()->updateRoute($this, $name);
         return $this;
     }
 
-    public function execController()
+    /**
+     * Executa o method do controller cadastrado pela rota
+     * 
+     * @return mixed
+     */
+    public function execController(): mixed
     {
         if (!$this->intanceController) {
             throw new \Exception("Controller instance not initialized for route {$this->path}");
@@ -141,12 +213,20 @@ class Route
         return call_user_func_array([$this->intanceController, $this->method], $this->params);
     }
 
+    /**
+     * Processa a rota transformando os parâmetros em valores
+     * Ex: /servicos/{id_service} para /servicos/6
+     * 
+     * @return string
+     */
     private function getProcessedPath(): string
     {
         $path = $this->path;
 
+        // Caso os parâmetros não estejam preenchidos, retorna o $path
         if (empty($this->params)) return $path;
 
+        // Verifica e salva em variável se é ou não um array de chave valor
         $isAssoc = array_keys($this->params) !== range(0, count($this->params) - 1);
 
         if ($isAssoc) {
@@ -170,14 +250,24 @@ class Route
         return $path;
     }
 
+    /**
+     * Retorna a path já processada com os parametros preenchido
+     * 
+     * @return string
+     */
     public function getPath(): string
     {
         return $this->getProcessedPath();
     }
 
+    /**
+     * Retorna a URL completa da rota podendo definir parametros de filtro
+     * 
+     * @param array $queryParams
+     * @return string
+     */
     public function getFullPath(array $queryParams = []): string
     {
-        
         $appUrl = rtrim(env('APP_URL', ''), '/');
         $path   = $this->getProcessedPath();
 
@@ -188,12 +278,25 @@ class Route
         return $appUrl . $path;
     }
 
+    /**
+     * Define a path
+     * 
+     * @param string $path
+     * @return void
+     */
     private function setPath(string $path): void
     {
         $this->path = '/' . trim($path, '/');
     }
 
-    private function setAction(array|string $action)
+    /**
+     * Define a ação que pode ser por string
+     * ou passando um array com o controller o method
+     * 
+     * @param array|string $action
+     * @return void
+     */
+    private function setAction(array|string $action): void
     {
         [$controller, $method] = $this->parseAction($action);
 
@@ -210,6 +313,12 @@ class Route
         $this->intanceController = $instance;
     }
 
+    /**
+     * Transforma a action em um array de ação e method
+     * 
+     * @param array|string $action
+     * @return array
+     */
     private function parseAction(array|string $action): array
     {
         $defaultMethod = 'index';

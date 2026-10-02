@@ -14,6 +14,11 @@ class Router
     private function __construct() {}
     private function __clone() {}
 
+    /**
+     * Retorna a instância única (Singleton) da classe.
+     * 
+     * @return self
+     */
     public static function getInstance(): Router
     {
         if (self::$instance == null) {
@@ -23,16 +28,35 @@ class Router
         return self::$instance;
     }
 
+    /**
+     * Retorna o nome da rota atual
+     * 
+     * @return ?string
+     */
     public function getCurrentRouteName(): ?string
     {
         return $this->currentRoute?->name;
     }
 
+    /**
+     * Verifica se o nome da rota passada por parâmetro é o mesmo da rota atual
+     * Retorna um valor verdadeiro ou falso
+     * 
+     * @param string $name
+     * @return bool
+     */
     public function isRoute(string $name): bool
     {
         return $name === $this->getCurrentRouteName();
     }
 
+    /**
+     * Adiciona a rota passada por parâmetro no array $routes
+     * 
+     * @param string $name
+     * @param Route $route
+     * @return Route
+     */
     public function addRoute(string $name, Route $route): Route
     {
         if (array_key_exists($name, $this->routes)) {
@@ -43,6 +67,13 @@ class Router
         return $route;
     }
 
+    /**
+     * Atualiza o nome da rota
+     * 
+     * @param Route &$route
+     * @param string $newName
+     * @return void
+     */
     public function updateRoute(Route &$route, string $newName = ''): void
     {
         if ($newName && $newName !== $route->name) {
@@ -56,6 +87,13 @@ class Router
         }
     }
 
+    /**
+     * Busca a rota pertencente a url e method http passados por parâmetro
+     * 
+     * @param string $path
+     * @param string $method
+     * @return Route|null
+     */
     public function getRouteByPathAndMethod(string $path, string $method): Route|null
     {
         $path = '/' . trim($path, '/');
@@ -78,19 +116,13 @@ class Router
         return null;
     }
 
-    public function getRouteByPath(string $path): Route|null
-    {
-        $path = '/' . trim($path, '/');
-
-        foreach ($this->routes as $route) {
-            if ($route->path == $path) {
-                return $route;
-            }
-        }
-
-        return null;
-    }
-
+    /**
+     * Retorna a rota pelo nome da rota passado por parâmetro
+     * 
+     * @param string $routeName
+     * @param array $params
+     * @return Route|null
+     */
     public function getRouteByName(string $routeName, array $params = []): Route|null
     {
         $route = $this->routes[$routeName] ?? null;
@@ -106,6 +138,11 @@ class Router
         return null;
     }
 
+    /**
+     * Processa a url atual e abre o controller referente a rota cadastrada
+     * 
+     * @return void
+     */
     public function process(): void
     {
         $url        = parse_url($_SERVER['REQUEST_URI']);
